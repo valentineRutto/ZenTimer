@@ -701,6 +701,12 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      <footer className="w-full py-8 px-6 text-center border-t border-white/5 relative z-10">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-white/20">
+          © Copyright 2026 VRuttoApps
+        </p>
+      </footer>
+
       <style dangerouslySetInnerHTML={{ __html: `
         .writing-mode-vertical-rl { writing-mode: vertical-rl; }
         .custom-scrollbar::-webkit-scrollbar {
