@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Play, 
   Pause, 
+  Square,
   RotateCcw, 
   Settings, 
   Volume2, 
@@ -400,12 +401,12 @@ export default function App() {
                 className={cn(
                   "flex-1 py-6 rounded-xl text-[12px] uppercase tracking-[0.3em] font-bold transition-all duration-500 flex items-center justify-center gap-3",
                   isActive 
-                    ? "bg-white/5 border border-white/10 text-white hover:bg-white/10" 
+                    ? "bg-red-500/5 border border-red-900/50 text-red-200 hover:bg-red-500/10" 
                     : "bg-accent text-bg-dark shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-[1.02]"
                 )}
               >
-                {isActive ? <Pause size={18} /> : <Play size={18} />}
-                {isActive ? 'Pause Session' : 'Start Session'}
+                {isActive ? <Square size={18} fill="currentColor" /> : <Play size={18} />}
+                {isActive ? 'Stop session' : 'Start Session'}
               </button>
               
               <button 
