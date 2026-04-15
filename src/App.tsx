@@ -63,8 +63,8 @@ export default function App() {
   });
   const [newGoalTitle, setNewGoalTitle] = useState('');
   const [showGoalInput, setShowGoalInput] = useState(false);
-  const [manualAddId, setManualAddId] = useState<string | null>(null);
-  const [manualMinutes, setManualMinutes] = useState('');
+  const [sessionSeconds, setSessionSeconds] = useState(0);
+  const prevGoalIdRef = useRef<string | null>(activeGoalId);
 
   // Persistence
   useEffect(() => {
@@ -74,6 +74,19 @@ export default function App() {
   useEffect(() => {
     if (activeGoalId) {
       localStorage.setItem('zentime_active_goal', activeGoalId);
+    }
+  }, [activeGoalId]);
+
+  useEffect(() => {
+    if (prevGoalIdRef.current !== activeGoalId) {
+      if (prevGoalIdRef.current && sessionSeconds > 0) {
+        const pid = prevGoalIdRef.current;
+        setGoals(prev => prev.map(g => 
+          g.id === pid ? { ...g, secondsSpent: g.secondsSpent + sessionSeconds } : g
+        ));
+        setSessionSeconds(0);
+      }
+      prevGoalIdRef.current = activeGoalId;
     }
   }, [activeGoalId]);
 
@@ -138,12 +151,6 @@ export default function App() {
 
   // Timer Logic
   const tick = useCallback(() => {
-    if (activeGoalId && mode === 'down') {
-      setGoals(prev => prev.map(g => 
-        g.id === activeGoalId ? { ...g, secondsSpent: g.secondsSpent + 1 } : g
-      ));
-    }
-
     if (isFadeActive) {
       setFadeTimeLeft(prev => {
         if (prev <= 1) {
@@ -154,13 +161,12 @@ export default function App() {
       });
     }
 
+    if (activeGoalId) {
+      setSessionSeconds(prev => prev + 1);
+    }
+
     if (mode === 'up') {
       setTimeLeft(prev => prev + 1);
-      if (activeGoalId) {
-        setGoals(prev => prev.map(g => 
-          g.id === activeGoalId ? { ...g, secondsSpent: g.secondsSpent + 1 } : g
-        ));
-      }
     } else {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -172,6 +178,21 @@ export default function App() {
       });
     }
   }, [mode, playCompletionSound, activeGoalId, isFadeActive, fadeDuration]);
+
+  const commitSession = useCallback(() => {
+    if (activeGoalId && sessionSeconds > 0) {
+      setGoals(prev => prev.map(g => 
+        g.id === activeGoalId ? { ...g, secondsSpent: g.secondsSpent + sessionSeconds } : g
+      ));
+      setSessionSeconds(0);
+    }
+  }, [activeGoalId, sessionSeconds]);
+
+  useEffect(() => {
+    if (!isActive) {
+      commitSession();
+    }
+  }, [isActive, commitSession]);
 
   useEffect(() => {
     if (isActive) {
@@ -189,11 +210,10 @@ export default function App() {
   
   const resetTimer = () => {
     setIsActive(false);
-    if (mode === 'up') {
-      setTimeLeft(0);
-    } else {
-      setTimeLeft(inputH * 3600 + inputM * 60 + inputS);
-    }
+    setTimeLeft(0);
+    setInputH(0);
+    setInputM(0);
+    setInputS(0);
   };
 
   const updateInput = (type: 'h' | 'm' | 's', val: string) => {
@@ -218,24 +238,15 @@ export default function App() {
   };
 
   const formatGoalTime = (seconds: number) => {
-    if (seconds === 0) return '0h';
+    if (seconds === 0) return '0s';
+    if (seconds < 60) return `${seconds}s`;
     if (seconds < 3600) {
       const m = Math.floor(seconds / 60);
-      return `${m}m`;
+      const s = seconds % 60;
+      return `${m}m ${s}s`;
     }
     const h = (seconds / 3600).toFixed(1);
     return `${h}h`;
-  };
-
-  const addTimeToGoal = (id: string) => {
-    const mins = parseInt(manualMinutes);
-    if (isNaN(mins) || mins <= 0) return;
-    
-    setGoals(prev => prev.map(g => 
-      g.id === id ? { ...g, secondsSpent: g.secondsSpent + (mins * 60) } : g
-    ));
-    setManualMinutes('');
-    setManualAddId(null);
   };
 
   const addGoal = () => {
@@ -453,20 +464,10 @@ export default function App() {
                           {goal.title}
                         </span>
                         <span className="text-[10px] text-white/30 uppercase tracking-wider">
-                          {formatGoalTime(goal.secondsSpent)} focused
+                          {formatGoalTime(goal.secondsSpent + (activeGoalId === goal.id ? sessionSeconds : 0))} focused
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setManualAddId(manualAddId === goal.id ? null : goal.id);
-                          }}
-                          className="text-white/20 hover:text-accent transition-all"
-                          title="Add time manually"
-                        >
-                          <Plus size={12} />
-                        </button>
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
@@ -478,35 +479,6 @@ export default function App() {
                         </button>
                       </div>
                     </div>
-
-                    <AnimatePresence>
-                      {manualAddId === goal.id && (
-                        <motion.div 
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="mt-3 pt-3 border-t border-white/5 overflow-hidden"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div className="flex gap-2">
-                            <input 
-                              type="number"
-                              value={manualMinutes}
-                              onChange={(e) => setManualMinutes(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && addTimeToGoal(goal.id)}
-                              placeholder="Mins"
-                              className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-[10px] focus:outline-none focus:border-accent/50 text-white"
-                            />
-                            <button 
-                              onClick={() => addTimeToGoal(goal.id)}
-                              className="bg-accent/20 text-accent px-2 py-1 rounded text-[10px] hover:bg-accent/30 transition-colors"
-                            >
-                              Add
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </div>
                 ))}
               </div>
