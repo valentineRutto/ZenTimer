@@ -394,13 +394,6 @@ export default function App() {
           </div>
 
           <div className="flex flex-col gap-8 mt-12">
-            <div className="flex gap-5 items-center">
-              <div className="text-[12px] uppercase tracking-[0.1em] text-white/40">
-                {isActive ? 'Session in progress' : 'Set your intention'}
-              </div>
-              <div className="w-24 h-[1px] bg-white/20" />
-            </div>
-
             <div className="flex flex-col sm:flex-row gap-4 max-w-md">
               <button 
                 onClick={toggleTimer}
@@ -424,10 +417,23 @@ export default function App() {
               </button>
             </div>
 
-            <div className="max-w-md p-6 rounded-xl bg-accent/5 border border-accent/10">
-              <p className="text-[10px] text-white/40 leading-relaxed italic">
-                "The soul always knows what to do to heal itself. The challenge is to silence the mind."
-              </p>
+            <div className="max-w-md p-5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+              <div className="flex flex-col gap-1">
+                <span className="text-xs text-white/70">Deep Focus Lock</span>
+                <span className="text-[9px] text-white/20 uppercase tracking-wider">Prevent distractions</span>
+              </div>
+              <button 
+                onClick={() => setIsLocked(!isLocked)}
+                className={cn(
+                  "w-10 h-5 rounded-full relative transition-colors duration-300",
+                  isLocked ? "bg-accent" : "bg-white/10"
+                )}
+              >
+                <div className={cn(
+                  "absolute top-1 w-3 h-3 rounded-full transition-all duration-300",
+                  isLocked ? "left-6 bg-bg-dark" : "left-1 bg-white/40"
+                )} />
+              </button>
             </div>
           </div>
         </div>
@@ -656,28 +662,6 @@ export default function App() {
                         onChange={(e) => setVolume(parseFloat(e.target.value))}
                         className="flex-1 h-[2px] bg-white/20 rounded-lg appearance-none cursor-pointer accent-accent"
                       />
-                    </div>
-                  </div>
-
-                  <div className="mt-10 pt-10 border-t border-white/5">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-6 block">Security</span>
-                    <div className="flex items-center justify-between p-5 rounded-xl bg-white/[0.02] border border-white/5">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-white/70">Deep Focus Lock</span>
-                        <span className="text-[9px] text-white/20 uppercase tracking-wider">Prevent distractions</span>
-                      </div>
-                      <button 
-                        onClick={() => setIsLocked(!isLocked)}
-                        className={cn(
-                          "w-10 h-5 rounded-full relative transition-colors duration-300",
-                          isLocked ? "bg-accent" : "bg-white/10"
-                        )}
-                      >
-                        <div className={cn(
-                          "absolute top-1 w-3 h-3 rounded-full transition-all duration-300",
-                          isLocked ? "left-6 bg-bg-dark" : "left-1 bg-white/40"
-                        )} />
-                      </button>
                     </div>
                   </div>
                 </motion.div>
