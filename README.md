@@ -20,7 +20,7 @@ Then load the generated `dist` folder in Chrome:
 3. Click Load unpacked.
 4. Select this project's `dist` folder.
 
-The extension opens Zen Timer Focus as the toolbar popup.
+The extension opens Zen Timer Focus as Chrome's New Tab page and as the toolbar popup.
 
 
 <img width="2578" height="1362" alt="image" src="https://github.com/user-attachments/assets/1eed9abc-bd24-4612-825d-bf76e9c1a88d" />
