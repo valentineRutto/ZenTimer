@@ -30,6 +30,13 @@ import {
 import { Howl } from 'howler';
 import { cn } from './lib/utils';
 import { THEMES, SOUNDS, type TimerMode, type Theme, type Sound, type Goal } from './constants';
+import {
+  getExtensionTimer,
+  resetExtensionTimer,
+  startExtensionTimer,
+  stopExtensionTimer,
+  type ExtensionTimerSnapshot,
+} from './extensionTimer';
 
 export default function App() {
   // State
@@ -95,6 +102,61 @@ export default function App() {
   // Refs
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const soundRef = useRef<Howl | null>(null);
+  const durationSeconds = inputH * 3600 + inputM * 60 + inputS;
+
+  const applyExtensionTimer = useCallback((snapshot: ExtensionTimerSnapshot | null) => {
+    if (!snapshot) return;
+
+    setMode(snapshot.mode);
+    setTimeLeft(snapshot.currentSeconds);
+    setIsActive(snapshot.isActive);
+
+    if (snapshot.activeGoalId) {
+      setActiveGoalId(snapshot.activeGoalId);
+    }
+
+    if (snapshot.mode === 'down' && snapshot.durationSeconds > 0) {
+      const h = Math.floor(snapshot.durationSeconds / 3600);
+      const m = Math.floor((snapshot.durationSeconds % 3600) / 60);
+      const s = snapshot.durationSeconds % 60;
+      setInputH(h);
+      setInputM(m);
+      setInputS(s);
+    }
+
+    if (snapshot.isActive && snapshot.activeGoalId) {
+      setSessionSeconds(snapshot.elapsedSeconds);
+    }
+  }, []);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const syncTimer = () => {
+      getExtensionTimer().then((snapshot) => {
+        if (!isCancelled) {
+          applyExtensionTimer(snapshot);
+        }
+      });
+    };
+
+    syncTimer();
+
+    const handleVisibility = () => {
+      if (!document.hidden) {
+        syncTimer();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('focus', syncTimer);
+
+    return () => {
+      isCancelled = true;
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('focus', syncTimer);
+    };
+  }, [applyExtensionTimer]);
 
   // Actions
   const playCompletionSound = useCallback(() => {
@@ -173,6 +235,7 @@ export default function App() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           setIsActive(false);
+          void stopExtensionTimer();
           playCompletionSound();
           return 0;
         }
@@ -208,9 +271,27 @@ export default function App() {
   }, [isActive, tick]);
 
   // Actions
-  const toggleTimer = () => setIsActive(!isActive);
+  const toggleTimer = async () => {
+    if (isActive) {
+      const snapshot = await stopExtensionTimer();
+      applyExtensionTimer(snapshot);
+      setIsActive(false);
+      return;
+    }
+
+    const snapshot = await startExtensionTimer({
+      mode,
+      timeLeft,
+      durationSeconds,
+      activeGoalId,
+    });
+
+    applyExtensionTimer(snapshot);
+    setIsActive(true);
+  };
   
   const resetTimer = () => {
+    void resetExtensionTimer();
     setIsActive(false);
     setTimeLeft(0);
     setInputH(0);
@@ -278,7 +359,7 @@ export default function App() {
     setIsFadeActive(!isFadeActive);
   };
 
-  const progress = mode === 'up' ? 0 : (timeLeft / (Math.max(1, inputH * 3600 + inputM * 60 + inputS))) * 100;
+  const progress = mode === 'up' ? 0 : (timeLeft / Math.max(1, durationSeconds)) * 100;
 
   return (
     <div className={cn(
