@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zen Timer Side Panel Preview</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; font-family: Inter, Arial, sans-serif; }
+      body { background: #f5f2ec; color: #211f1b; }
+      .browser { display: grid; grid-template-rows: 54px 1fr; width: 100vw; height: 100vh; }
+      .chrome {
+        display: flex; align-items: center; gap: 14px; padding: 0 18px;
+        background: #292a2d; color: #d9d9dc; border-bottom: 1px solid #18191b;
+      }
+      .dots { display: flex; gap: 7px; }
+      .dot { width: 11px; height: 11px; border-radius: 999px; background: #5f6368; }
+      .address {
+        flex: 1; height: 34px; display: flex; align-items: center; padding: 0 16px;
+        border-radius: 18px; background: #202124; color: #9aa0a6; font-size: 13px;
+      }
+      .content { display: grid; grid-template-columns: 1fr 420px; min-height: 0; }
+      main { padding: 74px 82px; background: linear-gradient(145deg, #faf8f3, #eee8dc); }
+      .eyebrow { color: #9b7c2f; font-size: 12px; letter-spacing: .22em; text-transform: uppercase; }
+      h1 { max-width: 610px; margin: 24px 0; font: 58px/1.05 Georgia, serif; font-weight: 400; }
+      p { max-width: 640px; color: #69645b; font-size: 18px; line-height: 1.7; }
+      .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 42px; max-width: 660px; }
+      .card { min-height: 150px; padding: 24px; border: 1px solid #d9d1c1; border-radius: 18px; background: rgba(255,255,255,.56); }
+      .card strong { display: block; margin-bottom: 12px; font: 24px Georgia, serif; }
+      aside { position: relative; min-width: 0; border-left: 1px solid #39323a; background: #0a0a0a; box-shadow: -18px 0 45px rgba(0,0,0,.2); }
+      .panel-label {
+        position: absolute; z-index: 2; top: 8px; right: 14px; padding: 6px 10px;
+        border-radius: 999px; background: rgba(212,175,55,.14); color: #d4af37;
+        font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+      }
+      iframe { display: block; width: 100%; height: 100%; border: 0; background: #0a0a0a; }
+    </style>
+  </head>
+  <body>
+    <div class="browser">
+      <div class="chrome">
+        <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="address">example.com/your-current-page</div>
+      </div>
+      <div class="content">
+        <main>
+          <span class="eyebrow">Your current page</span>
+          <h1>Stay in your flow without leaving the page.</h1>
+          <p>Zen Timer remains visible beside your work, so you can track focus sessions, take intentional breaks, and keep your goals close.</p>
+          <div class="cards">
+            <div class="card"><strong>Focused work</strong><span>Keep the timer in sight while reading, writing, or planning.</span></div>
+            <div class="card"><strong>Calm breaks</strong><span>Switch into a short reset without losing your place.</span></div>
+          </div>
+        </main>
+        <aside>
+          <div class="panel-label">Chrome side panel</div>
+          <iframe src="http://127.0.0.1:3001/" title="Zen Timer"></iframe>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

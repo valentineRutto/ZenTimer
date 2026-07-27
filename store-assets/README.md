@@ -5,6 +5,8 @@ Upload the files from `final/` to the matching Chrome Web Store fields:
 - Store icon: `store-icon-128.png` — 128×128 PNG
 - Screenshot 1: `screenshot-timer-goals-1280x800.jpg` — 1280×800 JPEG
 - Screenshot 2: `screenshot-deep-focus-1280x800.jpg` — 1280×800 JPEG
+- Screenshot 3: `screenshot-atmosphere-1280x800.jpg` — 1280×800 JPEG
+- Screenshot 4: `screenshot-side-panel-1280x800.jpg` — 1280×800 JPEG
 - Small promo tile: `small-promo-440x280.png` — 440×280 opaque RGB PNG
 - Marquee promo tile: `marquee-promo-1400x560.png` — 1400×560 opaque RGB PNG
 
