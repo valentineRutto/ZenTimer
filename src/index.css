@@ -19,4 +19,11 @@
     @apply font-sans antialiased bg-bg-dark text-[#EAEAEA];
     margin: 0;
   }
+
+  html:has(.floating-timer-shell),
+  body:has(.floating-timer-shell) {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
 }
