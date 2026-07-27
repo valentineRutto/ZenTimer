@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Privacy Policy — Zen Timer Focus</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #080808;
+        color: #eaeaea;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-width: 320px;
+        background:
+          radial-gradient(circle at 12% 0%, rgba(212, 175, 55, 0.12), transparent 30rem),
+          #080808;
+      }
+      a { color: #d4af37; }
+      a:hover { color: #f3d979; }
+      header {
+        border-bottom: 1px solid rgba(255,255,255,.08);
+        background: rgba(8,8,8,.82);
+        backdrop-filter: blur(18px);
+      }
+      .header-inner, main, footer {
+        width: min(100% - 40px, 820px);
+        margin: 0 auto;
+      }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 76px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #fff;
+        text-decoration: none;
+      }
+      .clock {
+        position: relative;
+        width: 26px;
+        height: 26px;
+        border: 2px solid #d4af37;
+        border-radius: 50%;
+      }
+      .clock::before, .clock::after {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 2px;
+        content: "";
+        background: #fff;
+        border-radius: 2px;
+        transform-origin: top center;
+      }
+      .clock::before { height: 7px; transform: rotate(0deg) translateX(-1px); }
+      .clock::after { height: 8px; transform: rotate(-55deg) translateX(-1px); }
+      .brand-name {
+        font-family: Georgia, Cambria, "Times New Roman", serif;
+        font-size: 22px;
+        font-style: italic;
+      }
+      .back-link {
+        font-size: 11px;
+        letter-spacing: .16em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      main { padding: 76px 0 90px; }
+      .eyebrow {
+        margin: 0 0 18px;
+        color: #d4af37;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .24em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 0;
+        font-family: Georgia, Cambria, "Times New Roman", serif;
+        font-size: clamp(44px, 8vw, 72px);
+        font-weight: 400;
+        letter-spacing: -.035em;
+      }
+      .effective {
+        margin: 18px 0 52px;
+        color: rgba(255,255,255,.38);
+        font-size: 13px;
+      }
+      section {
+        padding: 30px 0;
+        border-top: 1px solid rgba(255,255,255,.08);
+      }
+      h2 {
+        margin: 0 0 16px;
+        color: #fff;
+        font-family: Georgia, Cambria, "Times New Roman", serif;
+        font-size: 27px;
+        font-weight: 400;
+      }
+      p, li {
+        color: rgba(255,255,255,.62);
+        font-size: 15px;
+        line-height: 1.8;
+      }
+      p { margin: 0 0 14px; }
+      ul { margin: 12px 0 0; padding-left: 22px; }
+      li + li { margin-top: 5px; }
+      strong { color: rgba(255,255,255,.86); }
+      footer {
+        padding: 28px 0 40px;
+        border-top: 1px solid rgba(255,255,255,.08);
+        color: rgba(255,255,255,.28);
+        font-size: 11px;
+        letter-spacing: .13em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      @media (max-width: 520px) {
+        .header-inner, main, footer { width: min(100% - 28px, 820px); }
+        main { padding-top: 54px; }
+        .back-link { font-size: 9px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="./index.html" aria-label="Return to Zen Timer">
+          <span class="clock" aria-hidden="true"></span>
+          <span class="brand-name">Zen Timer</span>
+        </a>
+        <a class="back-link" href="./index.html">Back to timer</a>
+      </div>
+    </header>
+
+    <main>
+      <p class="eyebrow">Your privacy, clearly explained</p>
+      <h1>Privacy Policy</h1>
+      <p class="effective">Effective date: July 27, 2026</p>
+
+      <section>
+        <h2>Overview</h2>
+        <p>Zen Timer Focus is a Chrome extension that provides focus timers, break timers, goals, ambient sounds, completion notifications, a New Tab experience, and a persistent Chrome side panel.</p>
+      </section>
+
+      <section>
+        <h2>Information handled by the extension</h2>
+        <p>Zen Timer Focus stores the following information locally on the user's device:</p>
+        <ul>
+          <li>Focus-goal names created by the user</li>
+          <li>Time spent on each goal and the currently selected goal</li>
+          <li>Timer mode, duration, remaining time, and running or paused state</li>
+        </ul>
+        <p>This information is stored using browser local storage and <code>chrome.storage.local</code>. It is used only to provide timer and goal-tracking functionality.</p>
+        <p>Zen Timer Focus does not collect browsing history, website content, search queries, credentials, email addresses, financial information, health information, precise location, or personal communications.</p>
+        <p>The Chrome side panel displays the extension beside the current webpage but does not read, modify, or transmit the contents of that webpage.</p>
+      </section>
+
+      <section>
+        <h2>External audio requests</h2>
+        <p>Zen Timer Focus connects only to <code>https://assets.mixkit.co</code> to stream user-selected ambient sounds and the timer-completion sound.</p>
+        <p>As with ordinary internet requests, Mixkit or its infrastructure may receive technical request information such as the user's IP address, browser user-agent, and request time. Zen Timer Focus does not control Mixkit's handling of this technical information. Review <a href="https://mixkit.co/terms/" target="_blank" rel="noreferrer">Mixkit's terms and privacy information</a> for details.</p>
+        <p>No scripts or executable code are loaded from Mixkit.</p>
+      </section>
+
+      <section>
+        <h2>How information is used</h2>
+        <p>Locally stored information is used only to maintain timer state, resume paused sessions, track goal time, display completion notifications, and restore the extension interface.</p>
+        <p>The developer does not receive, view, sell, rent, or use this locally stored information for advertising, analytics, profiling, or marketing.</p>
+      </section>
+
+      <section>
+        <h2>Information sharing</h2>
+        <p>Zen Timer Focus does not transmit user-created goals or timer information to the developer and does not sell this information to third parties. The only external connection made by the extension is the HTTPS request to Mixkit required to stream ambient and completion sounds.</p>
+      </section>
+
+      <section>
+        <h2>Chrome permissions</h2>
+        <ul>
+          <li><strong>Storage:</strong> Saves timer and goal information locally.</li>
+          <li><strong>Alarms:</strong> Keeps timer completion events reliable when the interface is closed.</li>
+          <li><strong>Notifications:</strong> Alerts the user when a focus or break session finishes.</li>
+          <li><strong>Side Panel:</strong> Displays the timer beside the current webpage.</li>
+          <li><strong>Host access to assets.mixkit.co:</strong> Streams ambient and completion sounds.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Data retention and deletion</h2>
+        <p>Timer and goal information remains locally on the user's device until the user deletes goals, resets the timer, clears the extension's stored data, or uninstalls the extension. Uninstalling Zen Timer Focus removes locally stored extension information according to Chrome's extension-storage behavior.</p>
+      </section>
+
+      <section>
+        <h2>Data security</h2>
+        <p>Zen Timer Focus does not operate a developer-controlled server or database for user information. External audio files are requested over encrypted HTTPS connections.</p>
+      </section>
+
+      <section>
+        <h2>Chrome Web Store Limited Use</h2>
+        <p>The use of information received from Chrome APIs adheres to the Chrome Web Store User Data Policy, including the Limited Use requirements.</p>
+        <p>Zen Timer Focus does not use or transfer user information for personalized advertising, creditworthiness, lending, or unrelated purposes. The developer does not permit humans to read user information stored by the extension.</p>
+      </section>
+
+      <section>
+        <h2>Children's privacy</h2>
+        <p>Zen Timer Focus is not directed toward children under 13 and does not knowingly collect personal information from children.</p>
+      </section>
+
+      <section>
+        <h2>Changes to this policy</h2>
+        <p>This policy may be updated if Zen Timer Focus's functionality or data practices change. The effective date at the top of this page will be updated when revisions are published.</p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>For privacy questions or support, contact VRuttoApps through the <a href="https://github.com/valentineRutto/ZenTimer/issues" target="_blank" rel="noreferrer">Zen Timer support page</a>.</p>
+      </section>
+    </main>
+
+    <footer>© Copyright 2026 VRuttoApps</footer>
+  </body>
+</html>

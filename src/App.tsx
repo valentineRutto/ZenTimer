@@ -932,9 +932,18 @@ export default function App() {
       </AnimatePresence>
 
       <footer className="w-full py-8 px-6 text-center border-t border-white/5 relative z-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/20">
-          © Copyright 2026 VRuttoApps
-        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-white/20">
+          <span>© Copyright 2026 VRuttoApps</span>
+          <span aria-hidden="true">•</span>
+          <a
+            href="./privacy.html"
+            target="_blank"
+            rel="noreferrer"
+            className="transition-colors hover:text-accent"
+          >
+            Privacy Policy
+          </a>
+        </div>
       </footer>
 
       <style dangerouslySetInnerHTML={{ __html: `
