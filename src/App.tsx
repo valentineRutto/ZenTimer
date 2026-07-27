@@ -105,6 +105,8 @@ export default function App() {
   // Refs
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const soundRef = useRef<Howl | null>(null);
+  const isTimerActiveRef = useRef(isActive);
+  isTimerActiveRef.current = isActive;
   const durationSeconds = inputH * 3600 + inputM * 60 + inputS;
 
   const applyExtensionTimer = useCallback((snapshot: ExtensionTimerSnapshot | null) => {
@@ -173,31 +175,35 @@ export default function App() {
 
   // Sound Management
   useEffect(() => {
-    if (currentSound) {
-      if (soundRef.current) {
-        soundRef.current.stop();
-        soundRef.current.unload();
-      }
-      
-      soundRef.current = new Howl({
-        src: [currentSound.url],
-        loop: true,
-        volume: isMuted ? 0 : volume,
-        html5: true
-      });
+    if (!currentSound) {
+      soundRef.current?.stop();
+      soundRef.current?.unload();
+      soundRef.current = null;
+      return;
+    }
 
-      if (isActive) {
-        soundRef.current.play();
-      }
-    } else {
-      if (soundRef.current) {
-        soundRef.current.stop();
-      }
+    const ambientSound = new Howl({
+      src: [currentSound.url],
+      loop: true,
+      volume: isMuted ? 0 : volume,
+      html5: true,
+      onplay: () => {
+        if (!isTimerActiveRef.current) {
+          ambientSound.stop();
+        }
+      },
+    });
+    soundRef.current = ambientSound;
+
+    if (isTimerActiveRef.current) {
+      ambientSound.play();
     }
 
     return () => {
-      if (soundRef.current) {
-        soundRef.current.stop();
+      ambientSound.stop();
+      ambientSound.unload();
+      if (soundRef.current === ambientSound) {
+        soundRef.current = null;
       }
     };
   }, [currentSound]);
@@ -213,7 +219,7 @@ export default function App() {
     if (isActive && soundRef.current && !soundRef.current.playing()) {
       soundRef.current.play();
     } else if (!isActive && soundRef.current) {
-      soundRef.current.pause();
+      soundRef.current.stop();
     }
   }, [isActive]);
 
