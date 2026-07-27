@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { 
   Play, 
   Pause, 
@@ -37,6 +37,57 @@ import {
   type ExtensionTimerSnapshot,
 } from './extensionTimer';
 
+const CELEBRATION_PARTICLES = Array.from({length: 32}, (_, index) => {
+  const angle = (index / 32) * Math.PI * 2;
+  const distance = 34 + (index % 6) * 8;
+  return {
+    id: index,
+    x: Math.cos(angle) * distance,
+    y: Math.sin(angle) * distance,
+    delay: (index % 8) * 0.04,
+    color: index % 3 === 0 ? '#F6E7A1' : index % 3 === 1 ? '#D4AF37' : '#FFFFFF',
+    size: 4 + (index % 4) * 2,
+  };
+});
+
+function FocusConfetti() {
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) return null;
+
+  return (
+    <motion.div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-[200] overflow-hidden"
+    >
+      {CELEBRATION_PARTICLES.map((particle) => (
+        <motion.span
+          key={particle.id}
+          className="pointer-events-none absolute left-1/2 top-1/2 rounded-sm"
+          style={{
+            width: particle.size,
+            height: particle.size * 1.7,
+            backgroundColor: particle.color,
+          }}
+          initial={{x: 0, y: 0, opacity: 0, scale: 0, rotate: 0}}
+          animate={{
+            x: `${particle.x}vw`,
+            y: `${particle.y}vh`,
+            opacity: [0, 1, 1, 0],
+            scale: [0, 1, 1, 0.7],
+            rotate: particle.id % 2 === 0 ? 240 : -240,
+          }}
+          transition={{
+            duration: 2.4,
+            delay: particle.delay,
+            ease: 'easeOut',
+          }}
+        />
+      ))}
+    </motion.div>
+  );
+}
+
 export default function App() {
   // State
   const [mode, setMode] = useState<TimerMode>('down');
@@ -47,6 +98,7 @@ export default function App() {
   const [isActive, setIsActive] = useState(false);
   const [isTimerTransitioning, setIsTimerTransitioning] = useState(false);
   const [hasTimerStarted, setHasTimerStarted] = useState(false);
+  const [showFocusConfetti, setShowFocusConfetti] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]);
   const [currentSound, setCurrentSound] = useState<Sound | null>(null);
@@ -223,6 +275,16 @@ export default function App() {
     }
   }, [isActive]);
 
+  useEffect(() => {
+    if (!showFocusConfetti) return;
+
+    const dismissTimeout = window.setTimeout(() => {
+      setShowFocusConfetti(false);
+    }, 2800);
+
+    return () => window.clearTimeout(dismissTimeout);
+  }, [showFocusConfetti]);
+
   // Timer Logic
   const tick = useCallback(() => {
     if (isFadeActive) {
@@ -247,6 +309,9 @@ export default function App() {
           setIsActive(false);
           void pauseExtensionTimer();
           playCompletionSound();
+          if (mode === 'down') {
+            setShowFocusConfetti(true);
+          }
           return 0;
         }
         return prev - 1;
@@ -850,6 +915,10 @@ export default function App() {
             </div>
           </motion.div>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showFocusConfetti ? <FocusConfetti /> : null}
       </AnimatePresence>
 
       <footer className="w-full py-8 px-6 text-center border-t border-white/5 relative z-10">
