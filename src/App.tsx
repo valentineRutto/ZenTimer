@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Play, 
@@ -25,9 +24,7 @@ import {
   Target,
   Plus,
   Trash2,
-  Check,
-  PictureInPicture2,
-  X
+  Check
 } from 'lucide-react';
 import { Howl } from 'howler';
 import { cn } from './lib/utils';
@@ -39,73 +36,6 @@ import {
   resumeExtensionTimer,
   type ExtensionTimerSnapshot,
 } from './extensionTimer';
-
-type DocumentPictureInPicture = {
-  requestWindow: (options?: {width?: number; height?: number}) => Promise<Window>;
-};
-
-type PictureInPictureDocument = Document & {
-  documentPictureInPicture?: DocumentPictureInPicture;
-};
-
-type FloatingTimerProps = {
-  currentTheme: Theme;
-  isActive: boolean;
-  mode: TimerMode;
-  time: string;
-  onClose: () => void;
-  onToggle: () => void;
-};
-
-function FloatingTimer({
-  currentTheme,
-  isActive,
-  mode,
-  time,
-  onClose,
-  onToggle,
-}: FloatingTimerProps) {
-  return (
-    <div className={cn(
-      "floating-timer-shell relative flex h-screen min-h-[180px] w-full items-center justify-center overflow-hidden px-6 text-white",
-      currentTheme.background
-    )}>
-      <div
-        className="pointer-events-none absolute inset-0 opacity-70"
-        style={{ background: `radial-gradient(circle at 50% 20%, ${currentTheme.accent}26 0%, transparent 65%)` }}
-      />
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Close floating timer"
-        title="Close floating timer"
-        className="absolute right-3 top-3 z-10 rounded-full border border-white/10 bg-black/20 p-2 text-white/50 transition-colors hover:border-white/20 hover:text-white"
-      >
-        <X size={16} />
-      </button>
-
-      <div className="relative z-[1] flex flex-col items-center">
-        <span className="mb-2 text-[9px] uppercase tracking-[0.28em] text-white/35">
-          {mode === 'down' ? 'Focus remaining' : 'Focus elapsed'}
-        </span>
-        <div className={cn(
-          "font-serif text-[64px] font-light leading-none tracking-[-0.04em] tabular-nums sm:text-[72px]",
-          currentTheme.text
-        )}>
-          {time}
-        </div>
-        <button
-          type="button"
-          onClick={onToggle}
-          className="mt-5 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[9px] uppercase tracking-[0.2em] text-white/55 transition-colors hover:bg-white/10 hover:text-white"
-        >
-          {isActive ? <Pause size={12} /> : <Play size={12} />}
-          {isActive ? 'Pause' : 'Resume'}
-        </button>
-      </div>
-    </div>
-  );
-}
 
 export default function App() {
   // State
@@ -124,8 +54,6 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [activeTab, setActiveTab] = useState<'goals' | 'atmosphere'>('goals');
-  const [showFloatingFallback, setShowFloatingFallback] = useState(false);
-  const [pictureInPictureWindow, setPictureInPictureWindow] = useState<Window | null>(null);
 
   // Fade-out State
   const [fadeDuration, setFadeDuration] = useState(30); // minutes
@@ -147,8 +75,8 @@ export default function App() {
   const [showGoalInput, setShowGoalInput] = useState(false);
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const prevGoalIdRef = useRef<string | null>(activeGoalId);
-  const pictureInPictureWindowRef = useRef<Window | null>(null);
   const timerTransitionRef = useRef(false);
+  const focusDurationRef = useRef(25 * 60);
 
   // Persistence
   useEffect(() => {
@@ -191,7 +119,7 @@ export default function App() {
       setActiveGoalId(snapshot.activeGoalId);
     }
 
-    if (snapshot.mode === 'down' && snapshot.durationSeconds > 0) {
+    if (snapshot.mode !== 'up' && snapshot.durationSeconds > 0) {
       const h = Math.floor(snapshot.durationSeconds / 3600);
       const m = Math.floor((snapshot.durationSeconds % 3600) / 60);
       const s = snapshot.durationSeconds % 60;
@@ -301,7 +229,7 @@ export default function App() {
       });
     }
 
-    if (activeGoalId) {
+    if (activeGoalId && mode !== 'break') {
       setSessionSeconds(prev => prev + 1);
     }
 
@@ -363,13 +291,13 @@ export default function App() {
         return;
       }
 
-      if (mode === 'down' && timeLeft <= 0) return;
+      if (mode !== 'up' && timeLeft <= 0) return;
 
       const snapshot = await resumeExtensionTimer({
         mode,
         timeLeft,
         durationSeconds,
-        activeGoalId,
+        activeGoalId: mode === 'break' ? null : activeGoalId,
       });
 
       if (snapshot) {
@@ -384,47 +312,6 @@ export default function App() {
     }
   };
 
-  const closeFloatingTimer = useCallback(() => {
-    const floatingWindow = pictureInPictureWindowRef.current;
-    if (floatingWindow && !floatingWindow.closed) {
-      floatingWindow.close();
-    }
-    pictureInPictureWindowRef.current = null;
-    setPictureInPictureWindow(null);
-    setShowFloatingFallback(false);
-  }, []);
-
-  const openFloatingTimer = async () => {
-    if (pictureInPictureWindowRef.current && !pictureInPictureWindowRef.current.closed) {
-      pictureInPictureWindowRef.current.focus();
-      return;
-    }
-
-    const pictureInPicture = (document as PictureInPictureDocument).documentPictureInPicture;
-    if (!pictureInPicture) {
-      setShowFloatingFallback(true);
-      return;
-    }
-
-    try {
-      const floatingWindow = await pictureInPicture.requestWindow({width: 360, height: 220});
-      document.querySelectorAll('style, link[rel="stylesheet"]').forEach((node) => {
-        floatingWindow.document.head.appendChild(node.cloneNode(true));
-      });
-      floatingWindow.document.title = 'Zen Timer';
-      floatingWindow.addEventListener('pagehide', () => {
-        pictureInPictureWindowRef.current = null;
-        setPictureInPictureWindow(null);
-      }, {once: true});
-      pictureInPictureWindowRef.current = floatingWindow;
-      setPictureInPictureWindow(floatingWindow);
-    } catch {
-      setShowFloatingFallback(true);
-    }
-  };
-
-  useEffect(() => closeFloatingTimer, [closeFloatingTimer]);
-  
   const resetTimer = () => {
     void resetExtensionTimer();
     setIsActive(false);
@@ -445,9 +332,35 @@ export default function App() {
       const h = type === 'h' ? num : inputH;
       const m = type === 'm' ? Math.min(59, num) : inputM;
       const s = type === 's' ? Math.min(59, num) : inputS;
-      setTimeLeft(h * 3600 + m * 60 + s);
+      const nextDuration = h * 3600 + m * 60 + s;
+      setTimeLeft(nextDuration);
+      if (mode === 'down') {
+        focusDurationRef.current = nextDuration;
+      }
       setHasTimerStarted(false);
     }
+  };
+
+  const selectTimerMode = (nextMode: TimerMode) => {
+    if (isActive || isTimerTransitioning) return;
+
+    if (mode === 'down') {
+      focusDurationRef.current = durationSeconds;
+    }
+
+    setMode(nextMode);
+    setHasTimerStarted(false);
+
+    if (nextMode === 'up') {
+      setTimeLeft(0);
+      return;
+    }
+
+    const nextDuration = nextMode === 'break' ? 5 * 60 : focusDurationRef.current;
+    setInputH(Math.floor(nextDuration / 3600));
+    setInputM(Math.floor((nextDuration % 3600) / 60));
+    setInputS(nextDuration % 60);
+    setTimeLeft(nextDuration);
   };
 
   const formatTime = (seconds: number) => {
@@ -510,16 +423,6 @@ export default function App() {
           <h1 className="font-serif italic text-2xl tracking-tight text-white">Zen Timer</h1>
         </div>
         <div className="flex items-center gap-3 md:gap-6">
-          <button
-            type="button"
-            onClick={openFloatingTimer}
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[9px] uppercase tracking-[0.16em] text-white/50 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white md:px-4"
-            aria-label="Open floating timer"
-            title="Open floating timer"
-          >
-            <PictureInPicture2 size={15} />
-            <span className="hidden sm:inline">Floating view</span>
-          </button>
           <div className="hidden gap-3 md:flex">
             {THEMES.map((t) => (
               <button
@@ -547,12 +450,9 @@ export default function App() {
             <div className="flex bg-white/5 border border-white/10 rounded-full p-1">
               <button 
                 onClick={() => {
-                  setMode('down');
-                  if (!isActive) {
-                    setTimeLeft(inputH * 3600 + inputM * 60 + inputS);
-                    setHasTimerStarted(false);
-                  }
+                  selectTimerMode('down');
                 }}
+                disabled={isActive || isTimerTransitioning}
                 className={cn(
                   "px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
                   mode === 'down' ? "bg-accent text-bg-dark font-bold" : "text-white/40 hover:text-white/60"
@@ -562,18 +462,26 @@ export default function App() {
               </button>
               <button 
                 onClick={() => {
-                  setMode('up');
-                  if (!isActive) {
-                    setTimeLeft(0);
-                    setHasTimerStarted(false);
-                  }
+                  selectTimerMode('up');
                 }}
+                disabled={isActive || isTimerTransitioning}
                 className={cn(
                   "px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
                   mode === 'up' ? "bg-accent text-bg-dark font-bold" : "text-white/40 hover:text-white/60"
                 )}
               >
                 Count Up
+              </button>
+              <button
+                onClick={() => selectTimerMode('break')}
+                disabled={isActive || isTimerTransitioning}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
+                  mode === 'break' ? "bg-accent text-bg-dark font-bold" : "text-white/40 hover:text-white/60"
+                )}
+              >
+                <Coffee size={12} />
+                Take Break
               </button>
             </div>
             {activeGoalId && (
@@ -632,14 +540,14 @@ export default function App() {
             <div className="flex flex-col sm:flex-row gap-4 max-w-md">
               <button 
                 onClick={toggleTimer}
-                disabled={isTimerTransitioning || (!isActive && mode === 'down' && timeLeft <= 0)}
+                disabled={isTimerTransitioning || (!isActive && mode !== 'up' && timeLeft <= 0)}
                 className={cn(
                   "flex-1 py-6 rounded-xl text-[12px] uppercase tracking-[0.3em] font-bold transition-all duration-500 flex items-center justify-center gap-3",
                   isActive 
                     ? "bg-red-500/5 border border-red-900/50 text-red-200 hover:bg-red-500/10" 
                     : "bg-accent text-bg-dark shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-[1.02]",
                   isTimerTransitioning && "cursor-wait opacity-60",
-                  !isActive && mode === 'down' && timeLeft <= 0 && "cursor-not-allowed opacity-40"
+                  !isActive && mode !== 'up' && timeLeft <= 0 && "cursor-not-allowed opacity-40"
                 )}
               >
                 {isActive ? <Pause size={18} /> : <Play size={18} />}
@@ -936,38 +844,6 @@ export default function App() {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
-
-      {pictureInPictureWindow && createPortal(
-        <FloatingTimer
-          currentTheme={currentTheme}
-          isActive={isActive}
-          mode={mode}
-          time={formatTime(timeLeft)}
-          onClose={closeFloatingTimer}
-          onToggle={toggleTimer}
-        />,
-        pictureInPictureWindow.document.body
-      )}
-
-      <AnimatePresence>
-        {showFloatingFallback ? (
-          <motion.div
-            initial={{opacity: 0, scale: 0.92, y: 16}}
-            animate={{opacity: 1, scale: 1, y: 0}}
-            exit={{opacity: 0, scale: 0.92, y: 16}}
-            className="fixed bottom-5 right-5 z-[110] h-[220px] w-[min(360px,calc(100vw-40px))] overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/50"
-          >
-            <FloatingTimer
-              currentTheme={currentTheme}
-              isActive={isActive}
-              mode={mode}
-              time={formatTime(timeLeft)}
-              onClose={closeFloatingTimer}
-              onToggle={toggleTimer}
-            />
-          </motion.div>
-        ) : null}
       </AnimatePresence>
 
       <footer className="w-full py-8 px-6 text-center border-t border-white/5 relative z-10">

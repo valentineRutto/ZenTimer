@@ -89,7 +89,7 @@ export const SOUNDS: Sound[] = [
   }
 ];
 
-export type TimerMode = 'down' | 'up';
+export type TimerMode = 'down' | 'up' | 'break';
 
 export type Goal = {
   id: string;

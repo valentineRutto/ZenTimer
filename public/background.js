@@ -54,7 +54,7 @@ async function resumeTimer(payload) {
 
   await saveRuntime(runtime);
 
-  if (runtime.mode === 'down') {
+  if (runtime.mode !== 'up') {
     await scheduleCompletionAlarm(runtime.baseSeconds);
   } else {
     await clearCompletionAlarm();
@@ -132,7 +132,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   const runtime = await getStoredRuntime();
   const computed = computeRuntime(runtime);
 
-  if (!computed || computed.mode !== 'down') {
+  if (!computed || computed.mode === 'up') {
     return;
   }
 
@@ -147,8 +147,10 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   chrome.notifications.create({
     type: 'basic',
     iconUrl: 'icons/icon-128.png',
-    title: 'Zen Timer complete',
-    message: 'Your focus session has ended.',
+    title: computed.mode === 'break' ? 'Break complete' : 'Zen Timer complete',
+    message: computed.mode === 'break'
+      ? 'Your break is over. Ready to focus?'
+      : 'Your focus session has ended.',
   });
 });
 
