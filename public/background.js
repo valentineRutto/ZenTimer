@@ -42,7 +42,7 @@ async function scheduleCompletionAlarm(seconds) {
   }
 }
 
-async function startTimer(payload) {
+async function resumeTimer(payload) {
   const runtime = {
     isActive: true,
     mode: payload.mode,
@@ -63,7 +63,7 @@ async function startTimer(payload) {
   return computeRuntime(runtime);
 }
 
-async function stopTimer() {
+async function pauseTimer() {
   const runtime = await getStoredRuntime();
   const computed = computeRuntime(runtime);
 
@@ -157,10 +157,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     switch (message?.type) {
       case 'zentimer:get':
         return getTimer();
-      case 'zentimer:start':
-        return startTimer(message.payload);
-      case 'zentimer:stop':
-        return stopTimer();
+      case 'zentimer:resume':
+        return resumeTimer(message.payload);
+      case 'zentimer:pause':
+        return pauseTimer();
       case 'zentimer:reset':
         return resetTimer();
       default:

@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Play, 
   Pause, 
-  Square,
   RotateCcw, 
   Settings, 
   Volume2, 
@@ -35,9 +34,9 @@ import { cn } from './lib/utils';
 import { THEMES, SOUNDS, type TimerMode, type Theme, type Sound, type Goal } from './constants';
 import {
   getExtensionTimer,
+  pauseExtensionTimer,
   resetExtensionTimer,
-  startExtensionTimer,
-  stopExtensionTimer,
+  resumeExtensionTimer,
   type ExtensionTimerSnapshot,
 } from './extensionTimer';
 
@@ -116,6 +115,8 @@ export default function App() {
   const [inputS, setInputS] = useState(0);
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
+  const [isTimerTransitioning, setIsTimerTransitioning] = useState(false);
+  const [hasTimerStarted, setHasTimerStarted] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<Theme>(THEMES[0]);
   const [currentSound, setCurrentSound] = useState<Sound | null>(null);
@@ -147,6 +148,7 @@ export default function App() {
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const prevGoalIdRef = useRef<string | null>(activeGoalId);
   const pictureInPictureWindowRef = useRef<Window | null>(null);
+  const timerTransitionRef = useRef(false);
 
   // Persistence
   useEffect(() => {
@@ -183,6 +185,7 @@ export default function App() {
     setMode(snapshot.mode);
     setTimeLeft(snapshot.currentSeconds);
     setIsActive(snapshot.isActive);
+    setHasTimerStarted(snapshot.isActive || snapshot.durationSeconds > 0);
 
     if (snapshot.activeGoalId) {
       setActiveGoalId(snapshot.activeGoalId);
@@ -308,7 +311,7 @@ export default function App() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           setIsActive(false);
-          void stopExtensionTimer();
+          void pauseExtensionTimer();
           playCompletionSound();
           return 0;
         }
@@ -345,22 +348,40 @@ export default function App() {
 
   // Actions
   const toggleTimer = async () => {
-    if (isActive) {
-      const snapshot = await stopExtensionTimer();
-      applyExtensionTimer(snapshot);
-      setIsActive(false);
-      return;
+    if (timerTransitionRef.current) return;
+    timerTransitionRef.current = true;
+    setIsTimerTransitioning(true);
+
+    try {
+      if (isActive) {
+        const snapshot = await pauseExtensionTimer();
+        if (snapshot) {
+          applyExtensionTimer(snapshot);
+        } else {
+          setIsActive(false);
+        }
+        return;
+      }
+
+      if (mode === 'down' && timeLeft <= 0) return;
+
+      const snapshot = await resumeExtensionTimer({
+        mode,
+        timeLeft,
+        durationSeconds,
+        activeGoalId,
+      });
+
+      if (snapshot) {
+        applyExtensionTimer(snapshot);
+      } else {
+        setIsActive(true);
+        setHasTimerStarted(true);
+      }
+    } finally {
+      timerTransitionRef.current = false;
+      setIsTimerTransitioning(false);
     }
-
-    const snapshot = await startExtensionTimer({
-      mode,
-      timeLeft,
-      durationSeconds,
-      activeGoalId,
-    });
-
-    applyExtensionTimer(snapshot);
-    setIsActive(true);
   };
 
   const closeFloatingTimer = useCallback(() => {
@@ -411,6 +432,7 @@ export default function App() {
     setInputH(0);
     setInputM(0);
     setInputS(0);
+    setHasTimerStarted(false);
   };
 
   const updateInput = (type: 'h' | 'm' | 's', val: string) => {
@@ -424,6 +446,7 @@ export default function App() {
       const m = type === 'm' ? Math.min(59, num) : inputM;
       const s = type === 's' ? Math.min(59, num) : inputS;
       setTimeLeft(h * 3600 + m * 60 + s);
+      setHasTimerStarted(false);
     }
   };
 
@@ -525,7 +548,10 @@ export default function App() {
               <button 
                 onClick={() => {
                   setMode('down');
-                  if (!isActive) setTimeLeft(inputH * 3600 + inputM * 60 + inputS);
+                  if (!isActive) {
+                    setTimeLeft(inputH * 3600 + inputM * 60 + inputS);
+                    setHasTimerStarted(false);
+                  }
                 }}
                 className={cn(
                   "px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
@@ -537,7 +563,10 @@ export default function App() {
               <button 
                 onClick={() => {
                   setMode('up');
-                  if (!isActive) setTimeLeft(0);
+                  if (!isActive) {
+                    setTimeLeft(0);
+                    setHasTimerStarted(false);
+                  }
                 }}
                 className={cn(
                   "px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
@@ -603,15 +632,18 @@ export default function App() {
             <div className="flex flex-col sm:flex-row gap-4 max-w-md">
               <button 
                 onClick={toggleTimer}
+                disabled={isTimerTransitioning || (!isActive && mode === 'down' && timeLeft <= 0)}
                 className={cn(
                   "flex-1 py-6 rounded-xl text-[12px] uppercase tracking-[0.3em] font-bold transition-all duration-500 flex items-center justify-center gap-3",
                   isActive 
                     ? "bg-red-500/5 border border-red-900/50 text-red-200 hover:bg-red-500/10" 
-                    : "bg-accent text-bg-dark shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-[1.02]"
+                    : "bg-accent text-bg-dark shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-[1.02]",
+                  isTimerTransitioning && "cursor-wait opacity-60",
+                  !isActive && mode === 'down' && timeLeft <= 0 && "cursor-not-allowed opacity-40"
                 )}
               >
-                {isActive ? <Square size={18} fill="currentColor" /> : <Play size={18} />}
-                {isActive ? 'Stop session' : 'Start Session'}
+                {isActive ? <Pause size={18} /> : <Play size={18} />}
+                {isActive ? 'Pause session' : hasTimerStarted ? 'Resume session' : 'Start session'}
               </button>
               
               <button 

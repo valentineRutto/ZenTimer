@@ -56,9 +56,9 @@ const sendTimerMessage = (message: unknown) =>
 
 export const getExtensionTimer = () => sendTimerMessage({type: 'zentimer:get'});
 
-export const startExtensionTimer = (payload: TimerStartPayload) =>
-  sendTimerMessage({type: 'zentimer:start', payload});
+export const resumeExtensionTimer = (payload: TimerStartPayload) =>
+  sendTimerMessage({type: 'zentimer:resume', payload});
 
-export const stopExtensionTimer = () => sendTimerMessage({type: 'zentimer:stop'});
+export const pauseExtensionTimer = () => sendTimerMessage({type: 'zentimer:pause'});
 
 export const resetExtensionTimer = () => sendTimerMessage({type: 'zentimer:reset'});
