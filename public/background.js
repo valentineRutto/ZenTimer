@@ -1,6 +1,10 @@
 const RUNTIME_KEY = 'zentimer_runtime';
 const COMPLETION_ALARM = 'zentimer_countdown_complete';
 
+chrome.sidePanel
+  .setPanelBehavior({openPanelOnActionClick: true})
+  .catch((error) => console.error('Unable to enable the Zen Timer side panel:', error));
+
 function computeRuntime(runtime, now = Date.now()) {
   if (!runtime || !runtime.isActive) {
     return runtime || null;

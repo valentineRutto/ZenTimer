@@ -3,15 +3,18 @@
   "name": "Zen Timer Focus",
   "description": "An ambient focus timer with goals, themes, relaxing sounds, and a deep focus lock.",
   "version": "1.0.0",
+  "minimum_chrome_version": "114",
   "action": {
-    "default_popup": "index.html",
-    "default_title": "Zen Timer Focus",
+    "default_title": "Open Zen Timer beside this page",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",
       "48": "icons/icon-48.png",
       "128": "icons/icon-128.png"
     }
+  },
+  "side_panel": {
+    "default_path": "index.html"
   },
   "chrome_url_overrides": {
     "newtab": "index.html"
@@ -22,6 +25,7 @@
   "permissions": [
     "alarms",
     "notifications",
+    "sidePanel",
     "storage"
   ],
   "icons": {
