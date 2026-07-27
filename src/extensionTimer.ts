@@ -2,6 +2,7 @@ import type {TimerMode} from './constants';
 
 export type ExtensionTimerSnapshot = {
   isActive: boolean;
+  hasStarted?: boolean;
   mode: TimerMode;
   baseSeconds: number;
   durationSeconds: number;
@@ -61,4 +62,5 @@ export const resumeExtensionTimer = (payload: TimerStartPayload) =>
 
 export const pauseExtensionTimer = () => sendTimerMessage({type: 'zentimer:pause'});
 
-export const resetExtensionTimer = () => sendTimerMessage({type: 'zentimer:reset'});
+export const resetExtensionTimer = (payload?: TimerStartPayload) =>
+  sendTimerMessage({type: 'zentimer:reset', payload});

@@ -49,6 +49,7 @@ async function scheduleCompletionAlarm(seconds) {
 async function resumeTimer(payload) {
   const runtime = {
     isActive: true,
+    hasStarted: true,
     mode: payload.mode,
     baseSeconds: Math.max(0, payload.timeLeft),
     durationSeconds: Math.max(0, payload.durationSeconds),
@@ -87,15 +88,17 @@ async function pauseTimer() {
   return computeRuntime(stoppedRuntime);
 }
 
-async function resetTimer() {
+async function resetTimer(payload) {
+  const resetSeconds = Math.max(0, payload?.timeLeft || 0);
   const runtime = {
     isActive: false,
-    mode: 'down',
-    baseSeconds: 0,
-    durationSeconds: 0,
+    hasStarted: false,
+    mode: payload?.mode || 'down',
+    baseSeconds: resetSeconds,
+    durationSeconds: Math.max(0, payload?.durationSeconds || resetSeconds),
     startedAt: Date.now(),
-    activeGoalId: null,
-    currentSeconds: 0,
+    activeGoalId: payload?.activeGoalId || null,
+    currentSeconds: resetSeconds,
     elapsedSeconds: 0,
   };
 
@@ -168,7 +171,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       case 'zentimer:pause':
         return pauseTimer();
       case 'zentimer:reset':
-        return resetTimer();
+        return resetTimer(message.payload);
       default:
         return null;
     }

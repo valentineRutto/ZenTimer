@@ -167,7 +167,7 @@ export default function App() {
     setMode(snapshot.mode);
     setTimeLeft(snapshot.currentSeconds);
     setIsActive(snapshot.isActive);
-    setHasTimerStarted(snapshot.isActive || snapshot.durationSeconds > 0);
+    setHasTimerStarted(snapshot.hasStarted ?? (snapshot.isActive || snapshot.durationSeconds > 0));
 
     if (snapshot.activeGoalId) {
       setActiveGoalId(snapshot.activeGoalId);
@@ -280,10 +280,20 @@ export default function App() {
 
     const dismissTimeout = window.setTimeout(() => {
       setShowFocusConfetti(false);
+      setIsActive(false);
+      setTimeLeft(durationSeconds);
+      setHasTimerStarted(false);
+
+      void resetExtensionTimer({
+        mode: 'down',
+        timeLeft: durationSeconds,
+        durationSeconds,
+        activeGoalId,
+      }).then(applyExtensionTimer);
     }, 2800);
 
     return () => window.clearTimeout(dismissTimeout);
-  }, [showFocusConfetti]);
+  }, [activeGoalId, applyExtensionTimer, durationSeconds, showFocusConfetti]);
 
   // Timer Logic
   const tick = useCallback(() => {
