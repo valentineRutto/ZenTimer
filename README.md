@@ -1,27 +1,15 @@
-# Zen Focus Timer 
+# Zen Timer Focus
 
--An ambient Pomodoro timer with relaxing sounds and customizable themes. Let users add they goals they are focusing on and how how many hours they have spent on it
+-An ambient focus timer with goals, themes, relaxing sounds, and a deep focus lock.
+
+Zen Timer provides a persistent focus timer through Chrome’s New Tab page and side panel, with countdown, count-up, break, goal, and ambient-sound features.
 
 [zen-timer-focus.vercel.app/
 ](https://zen-timer-focus.vercel.app/)
 
 ## Chrome extension
 
-Build the extension files:
-
-```sh
-npm run build:extension
-```
-
-Then load the generated `dist` folder in Chrome:
-
-1. Open `chrome://extensions`.
-2. Enable Developer mode.
-3. Click Load unpacked.
-4. Select this project's `dist` folder.
-
-The extension opens Zen Timer Focus as Chrome's New Tab page and as the toolbar popup. A background service worker keeps timer state in Chrome storage, so active sessions continue after the popup closes.
-
+[Get the Chrome extension from chrome webstore](https://chromewebstore.google.com/detail/ldghdeggjpjicoofpenephbhimggmkld?utm_source=item-share-cb)
 
 <img width="2578" height="1362" alt="image" src="https://github.com/user-attachments/assets/1eed9abc-bd24-4612-825d-bf76e9c1a88d" />
 <img width="2959" height="1571" alt="image" src="https://github.com/user-attachments/assets/3ed96775-3bd1-4cda-9151-7f0d5fffe724" />
