@@ -11,5 +11,67 @@ Zen Timer provides a persistent focus timer through Chrome’s New Tab page and 
 
 [Get the Chrome extension from chrome webstore](https://chromewebstore.google.com/detail/ldghdeggjpjicoofpenephbhimggmkld?utm_source=item-share-cb)
 
-<img width="2578" height="1362" alt="image" src="https://github.com/user-attachments/assets/1eed9abc-bd24-4612-825d-bf76e9c1a88d" />
-<img width="2959" height="1571" alt="image" src="https://github.com/user-attachments/assets/3ed96775-3bd1-4cda-9151-7f0d5fffe724" />
+### Local development
+
+Build the extension files:
+
+```sh
+npm run build:extension
+```
+
+Then load the generated `dist` folder in Chrome:
+
+1. Open `chrome://extensions`.
+2. Enable Developer mode.
+3. Click Load unpacked.
+4. Select this project's `dist` folder.
+
+The extension opens Zen Timer Focus as Chrome's New Tab page and as the toolbar popup. A background service worker keeps timer state in Chrome storage, so active sessions continue after the popup closes.
+
+## Gallery
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/images/screenshot-timer-goals-1280x800.jpg" alt="Zen Timer focus goals screen" />
+      <br />
+      <sub><b>Timer and focus goals</b></sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/images/screenshot-atmosphere-1280x800.jpg" alt="Zen Timer atmosphere controls" />
+      <br />
+      <sub><b>Atmosphere controls</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/images/screenshot-deep-focus-1280x800.jpg" alt="Zen Timer deep focus mode" />
+      <br />
+      <sub><b>Deep focus mode</b></sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/images/screenshot-side-panel-1280x800.jpg" alt="Zen Timer Chrome extension side panel" />
+      <br />
+      <sub><b>Chrome extension panel</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <img src="docs/images/marquee-promo-1400x560.png" alt="Zen Timer Chrome Web Store marquee" />
+      <br />
+      <sub><b>Chrome Web Store marquee</b></sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/images/small-promo-440x280.png" alt="Zen Timer Chrome Web Store promotion" />
+      <br />
+      <sub><b>Chrome Web Store promotion</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img width="128" src="docs/images/store-icon-128.png" alt="Zen Timer extension icon" />
+      <br />
+      <sub><b>Extension icon</b></sub>
+    </td>
+  </tr>
+</table>
