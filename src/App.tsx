@@ -24,7 +24,8 @@ import {
   Target,
   Plus,
   Trash2,
-  Check
+  Check,
+  Chrome
 } from 'lucide-react';
 import { Howl } from 'howler';
 import { cn } from './lib/utils';
@@ -36,6 +37,9 @@ import {
   resumeExtensionTimer,
   type ExtensionTimerSnapshot,
 } from './extensionTimer';
+
+const CHROME_EXTENSION_URL =
+  'https://chromewebstore.google.com/detail/ldghdeggjpjicoofpenephbhimggmkld?utm_source=item-share-cb';
 
 const CELEBRATION_PARTICLES = Array.from({length: 32}, (_, index) => {
   const angle = (index / 32) * Math.PI * 2;
@@ -504,6 +508,18 @@ export default function App() {
           <h1 className="font-serif italic text-2xl tracking-tight text-white">Zen Timer</h1>
         </div>
         <div className="flex items-center gap-3 md:gap-6">
+          <a
+            href={CHROME_EXTENSION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Get Zen Timer from the Chrome Web Store"
+            className="group flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-2 text-accent transition-all hover:border-accent/60 hover:bg-accent hover:text-bg-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg-dark sm:px-4"
+          >
+            <Chrome size={16} aria-hidden="true" />
+            <span className="hidden text-[10px] font-bold uppercase tracking-[0.16em] sm:inline">
+              Get Chrome Extension
+            </span>
+          </a>
           <div className="hidden gap-3 md:flex">
             {THEMES.map((t) => (
               <button
