@@ -81,7 +81,7 @@ function PlaybackControls({
             <VolumeX size={16} aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <span className="block font-serif italic text-base text-white/70">Silent session</span>
+            <span className="block text-base font-medium text-white/70">Silent session</span>
             <span className="block truncate text-[9px] uppercase tracking-[0.14em] text-white/25">
               Choose a sound in Atmosphere
             </span>
@@ -104,7 +104,7 @@ function PlaybackControls({
           <span className="block text-[9px] uppercase tracking-[0.2em] text-accent">
             Now playing
           </span>
-          <span className="mt-1 block truncate font-serif italic text-lg text-white/80">
+          <span className="mt-1 block truncate text-lg font-medium text-white/80">
             {currentSound?.name ?? 'Silence'}
           </span>
         </div>
@@ -667,7 +667,7 @@ export default function App() {
       <header className="w-full py-6 px-6 md:px-12 lg:px-20 flex items-center justify-between relative z-20 border-b border-white/5">
         <div className="flex items-center gap-3">
           <TimerIcon className="text-accent" size={24} />
-          <h1 className="font-serif italic text-2xl tracking-tight text-white">Zen Timer</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-white">Zen Timer</h1>
         </div>
         <div className="flex items-center gap-3 md:gap-6">
           <a
@@ -999,7 +999,7 @@ export default function App() {
                           currentSound === null ? "bg-accent/10 border-accent/30 text-accent" : "bg-white/[0.02] border-white/5 text-white/40 hover:border-white/10"
                         )}
                       >
-                        <span className="font-serif italic text-lg">Silence</span>
+                        <span className="text-lg font-medium">Silence</span>
                         {currentSound === null && <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />}
                       </button>
                       {SOUNDS.map((s) => (
@@ -1012,7 +1012,7 @@ export default function App() {
                           )}
                         >
                           <div className="flex flex-col">
-                            <span className="font-serif italic text-lg">{s.name}</span>
+                            <span className="text-lg font-medium">{s.name}</span>
                             <span className="text-[9px] uppercase tracking-widest opacity-40">{s.category}</span>
                           </div>
                           {currentSound?.id === s.id && <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />}
@@ -1054,7 +1054,7 @@ export default function App() {
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-bg-dark/80 backdrop-blur-md"
           >
             <div className="text-center px-6">
-              <span className="font-serif italic text-xl md:text-2xl text-accent mb-4 block">Deep Focus</span>
+              <span className="mb-4 block text-xl font-medium text-accent md:text-2xl">Deep Focus</span>
               <div className={cn("font-serif text-[100px] sm:text-[140px] md:text-[180px] leading-none font-light tracking-[-0.03em] tabular-nums mb-12", currentTheme.text)}>
                 {formatTime(timeLeft)}
               </div>
