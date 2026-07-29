@@ -32,39 +32,34 @@ The extension opens Zen Timer Focus as Chrome's New Tab page and as the toolbar 
 
 <table>
   <tr>
-    <td width="50%" align="center">
-      <img src="docs/images/screenshot-timer-goals-1280x800.jpg" alt="Zen Timer focus goals screen" />
+    <td colspan="2" align="center">
+      <img src="docs/images/zen-timer-marquee-promo-1400x560.jpg" alt="Zen Timer promotional marquee showing the active focus timer" />
       <br />
-      <sub><b>Timer and focus goals</b></sub>
-    </td>
-    <td width="50%" align="center">
-      <img src="docs/images/screenshot-atmosphere-1280x800.jpg" alt="Zen Timer atmosphere controls" />
-      <br />
-      <sub><b>Atmosphere controls</b></sub>
+      <sub><b>Focus deeply. Work beautifully.</b></sub>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="docs/images/screenshot-deep-focus-1280x800.jpg" alt="Zen Timer deep focus mode" />
+      <img src="docs/images/01-own-your-next-25-minutes.jpg" alt="Zen Timer countdown timer and focus goals" />
       <br />
-      <sub><b>Deep focus mode</b></sub>
+      <sub><b>Own your next 25 minutes</b></sub>
     </td>
     <td width="50%" align="center">
-      <img src="docs/images/screenshot-side-panel-1280x800.jpg" alt="Zen Timer Chrome extension side panel" />
+      <img src="docs/images/05-stay-in-the-flow.jpg" alt="Zen Timer active session with sound controls and goals" />
       <br />
-      <sub><b>Chrome extension panel</b></sub>
+      <sub><b>Stay in the flow</b></sub>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="docs/images/marquee-promo-1400x560.png" alt="Zen Timer Chrome Web Store marquee" />
+      <img src="docs/images/07-lock-in-tune-out.jpg" alt="Zen Timer distraction-free Deep Focus Lock mode" />
       <br />
-      <sub><b>Chrome Web Store marquee</b></sub>
+      <sub><b>Lock in. Tune everything out.</b></sub>
     </td>
     <td width="50%" align="center">
-      <img src="docs/images/small-promo-440x280.png" alt="Zen Timer Chrome Web Store promotion" />
+      <img src="docs/images/08-focus-without-leaving-your-tab.jpg" alt="Zen Timer Chrome extension side panel" />
       <br />
-      <sub><b>Chrome Web Store promotion</b></sub>
+      <sub><b>Focus without leaving your tab</b></sub>
     </td>
   </tr>
   <tr>
