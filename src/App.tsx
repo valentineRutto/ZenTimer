@@ -660,14 +660,14 @@ export default function App() {
 
   return (
     <div className={cn(
-      "min-h-screen w-full transition-colors duration-1000 flex flex-col overflow-y-auto relative font-sans",
+      "relative flex min-h-[100dvh] w-full flex-col overflow-x-hidden transition-colors duration-1000 font-sans",
       currentTheme.background
     )}>
       {/* Header */}
-      <header className="w-full py-6 px-6 md:px-12 lg:px-20 flex items-center justify-between relative z-20 border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <TimerIcon className="text-accent" size={24} />
-          <h1 className="text-2xl font-semibold tracking-tight text-white">Zen Timer</h1>
+      <header className="relative z-20 flex w-full items-center justify-between gap-3 border-b border-white/5 px-4 py-4 sm:px-6 sm:py-5 md:px-10 xl:px-16 2xl:px-20">
+        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+          <TimerIcon className="shrink-0 text-accent" size={24} />
+          <h1 className="truncate text-xl font-semibold tracking-tight text-white sm:text-2xl">Zen Timer</h1>
         </div>
         <div className="flex items-center gap-3 md:gap-6">
           <a
@@ -702,18 +702,18 @@ export default function App() {
       <div className="absolute top-[-10%] right-[-10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full blur-[80px] pointer-events-none z-0 opacity-50"
            style={{ background: `radial-gradient(circle, ${currentTheme.accent}14 0%, transparent 70%)` }} />
 
-      <div className="flex flex-col lg:flex-row flex-1 relative z-10">
+      <div className="relative z-10 flex flex-1 flex-col xl:flex-row">
         {/* Main Timer Area */}
-        <div className="flex-1 flex flex-col justify-center px-6 md:px-12 lg:px-20 py-12 lg:py-0">
-          <div className="flex flex-wrap items-center gap-3 mb-8">
-            <div className="flex bg-white/5 border border-white/10 rounded-full p-1">
+        <main className="timer-stage flex min-w-0 flex-1 flex-col justify-center px-4 py-8 sm:px-6 sm:py-10 md:px-10 md:py-12 xl:px-12 xl:py-14 2xl:px-20">
+          <div className="mb-6 flex flex-wrap items-center gap-3 sm:mb-8">
+            <div className="grid w-full grid-cols-3 rounded-2xl border border-white/10 bg-white/5 p-1 sm:flex sm:w-auto sm:rounded-full">
               <button 
                 onClick={() => {
                   selectTimerMode('down');
                 }}
                 disabled={isActive || isTimerTransitioning}
                 className={cn(
-                  "px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
+                  "min-w-0 rounded-xl px-2 py-2 text-[9px] uppercase tracking-[0.08em] transition-all sm:rounded-full sm:px-4 sm:py-1.5 sm:text-[10px] sm:tracking-[0.1em]",
                   mode === 'down' ? "bg-accent text-bg-dark font-bold" : "text-white/40 hover:text-white/60"
                 )}
               >
@@ -725,7 +725,7 @@ export default function App() {
                 }}
                 disabled={isActive || isTimerTransitioning}
                 className={cn(
-                  "px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
+                  "min-w-0 rounded-xl px-2 py-2 text-[9px] uppercase tracking-[0.08em] transition-all sm:rounded-full sm:px-4 sm:py-1.5 sm:text-[10px] sm:tracking-[0.1em]",
                   mode === 'up' ? "bg-accent text-bg-dark font-bold" : "text-white/40 hover:text-white/60"
                 )}
               >
@@ -735,7 +735,7 @@ export default function App() {
                 onClick={() => selectTimerMode('break')}
                 disabled={isActive || isTimerTransitioning}
                 className={cn(
-                  "flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.1em] transition-all",
+                  "flex min-w-0 items-center justify-center gap-1 rounded-xl px-2 py-2 text-[9px] uppercase tracking-[0.08em] transition-all sm:rounded-full sm:px-4 sm:py-1.5 sm:text-[10px] sm:tracking-[0.1em]",
                   mode === 'break' ? "bg-accent text-bg-dark font-bold" : "text-white/40 hover:text-white/60"
                 )}
               >
@@ -744,9 +744,9 @@ export default function App() {
               </button>
             </div>
             {activeGoalId && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full">
+              <div className="flex min-w-0 max-w-full items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
                 <Target size={12} className="text-accent" />
-                <span className="text-[11px] uppercase tracking-wider text-white/60">
+                <span className="truncate text-[11px] uppercase tracking-wider text-white/60">
                   {goals.find(g => g.id === activeGoalId)?.title}
                 </span>
               </div>
@@ -760,48 +760,48 @@ export default function App() {
                 initial={{ opacity: 0.8 }}
                 animate={{ opacity: 1 }}
                 className={cn(
-                  "font-serif text-[80px] sm:text-[120px] md:text-[150px] lg:text-[180px] leading-none font-light tracking-[-0.03em] tabular-nums",
+                  "timer-display max-w-full overflow-hidden font-serif leading-none font-light tracking-[-0.05em] tabular-nums",
                   currentTheme.text
                 )}
               >
                 {formatTime(timeLeft)}
               </motion.div>
             ) : (
-              <div className="flex items-center font-serif text-[80px] sm:text-[120px] md:text-[150px] lg:text-[180px] leading-none font-light tracking-[-0.03em] tabular-nums">
+              <div className="timer-display flex max-w-full items-center font-serif leading-none font-light tracking-[-0.05em] tabular-nums">
                 <input 
                   type="number"
                   value={inputH.toString().padStart(2, '0')}
                   onChange={(e) => updateInput('h', e.target.value)}
-                  className={cn("bg-transparent w-[100px] sm:w-[150px] md:w-[180px] lg:w-[220px] outline-none text-center", currentTheme.text)}
+                  className={cn("timer-input min-w-0 bg-transparent text-center outline-none", currentTheme.text)}
                   placeholder="00"
                 />
-                <span className="text-white/10 mx-[-10px] md:mx-[-20px]">:</span>
+                <span className="-mx-1 text-white/10 sm:-mx-2 md:-mx-4">:</span>
                 <input 
                   type="number"
                   value={inputM.toString().padStart(2, '0')}
                   onChange={(e) => updateInput('m', e.target.value)}
-                  className={cn("bg-transparent w-[100px] sm:w-[150px] md:w-[180px] lg:w-[220px] outline-none text-center", currentTheme.text)}
+                  className={cn("timer-input min-w-0 bg-transparent text-center outline-none", currentTheme.text)}
                   placeholder="00"
                 />
-                <span className="text-white/10 mx-[-10px] md:mx-[-20px]">:</span>
+                <span className="-mx-1 text-white/10 sm:-mx-2 md:-mx-4">:</span>
                 <input 
                   type="number"
                   value={inputS.toString().padStart(2, '0')}
                   onChange={(e) => updateInput('s', e.target.value)}
-                  className={cn("bg-transparent w-[100px] sm:w-[150px] md:w-[180px] lg:w-[220px] outline-none text-center", currentTheme.text)}
+                  className={cn("timer-input min-w-0 bg-transparent text-center outline-none", currentTheme.text)}
                   placeholder="00"
                 />
               </div>
             )}
           </div>
 
-          <div className="flex flex-col gap-8 mt-12">
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md">
+          <div className="timer-actions mt-8 flex flex-col gap-6 sm:mt-12 sm:gap-8">
+            <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row sm:gap-4">
               <button 
                 onClick={toggleTimer}
                 disabled={isTimerTransitioning || (!isActive && mode !== 'up' && timeLeft <= 0)}
                 className={cn(
-                  "flex-1 py-6 rounded-xl text-[12px] uppercase tracking-[0.3em] font-bold transition-all duration-500 flex items-center justify-center gap-3",
+                  "flex flex-1 items-center justify-center gap-3 rounded-xl py-5 text-[11px] font-bold uppercase tracking-[0.22em] transition-all duration-500 sm:py-6 sm:text-[12px] sm:tracking-[0.3em]",
                   isActive 
                     ? "bg-red-500/5 border border-red-900/50 text-red-200 hover:bg-red-500/10" 
                     : "bg-accent text-bg-dark shadow-[0_10px_30px_rgba(212,175,55,0.2)] hover:scale-[1.02]",
@@ -848,7 +848,7 @@ export default function App() {
               ) : null}
             </AnimatePresence>
 
-            <div className="max-w-md p-5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+            <div className="flex w-full max-w-md items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-5">
               <div className="flex flex-col gap-1">
                 <span className="text-xs text-white/70">Deep Focus Lock</span>
                 <span className="text-[9px] text-white/20 uppercase tracking-wider">Prevent distractions</span>
@@ -867,10 +867,10 @@ export default function App() {
               </button>
             </div>
           </div>
-        </div>
+        </main>
 
         {/* Controls Panel with Tabs */}
-        <div className="w-full lg:w-[400px] bg-white/[0.03] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col h-full min-h-[500px]">
+        <aside className="flex min-h-[420px] w-full flex-col border-t border-white/10 bg-white/[0.03] xl:min-h-0 xl:w-[clamp(360px,30vw,440px)] xl:border-l xl:border-t-0">
           {/* Tab Menu */}
           <div className="flex border-b border-white/10">
             <button 
@@ -893,7 +893,7 @@ export default function App() {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+          <div className="custom-scrollbar flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
             <AnimatePresence mode="wait">
               {activeTab === 'goals' && (
                 <motion.div
@@ -991,7 +991,7 @@ export default function App() {
                 >
                   <div className="mb-10">
                     <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-6 block">Ambient Scapes</span>
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-1">
                       <button
                         onClick={() => setCurrentSound(null)}
                         className={cn(
@@ -1041,7 +1041,7 @@ export default function App() {
               )}
             </AnimatePresence>
           </div>
-        </div>
+        </aside>
       </div>
 
       {/* Full Screen Lock Overlay */}
@@ -1053,9 +1053,9 @@ export default function App() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-bg-dark/80 backdrop-blur-md"
           >
-            <div className="text-center px-6">
+            <div className="w-full max-w-full overflow-hidden px-4 text-center sm:px-6">
               <span className="mb-4 block text-xl font-medium text-accent md:text-2xl">Deep Focus</span>
-              <div className={cn("font-serif text-[100px] sm:text-[140px] md:text-[180px] leading-none font-light tracking-[-0.03em] tabular-nums mb-12", currentTheme.text)}>
+              <div className={cn("lock-timer-display mb-10 max-w-full overflow-hidden font-serif leading-none font-light tracking-[-0.05em] tabular-nums sm:mb-12", currentTheme.text)}>
                 {formatTime(timeLeft)}
               </div>
               

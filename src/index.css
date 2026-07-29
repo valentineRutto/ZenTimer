@@ -11,12 +11,38 @@
   html,
   body,
   #root {
-    min-width: 380px;
-    min-height: 600px;
+    min-width: 320px;
+    min-height: 100%;
   }
 
   body {
     @apply font-sans antialiased bg-bg-dark text-[#EAEAEA];
     margin: 0;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .timer-display {
+    font-size: clamp(4rem, 18vw, 11.25rem);
+  }
+
+  .timer-input {
+    width: clamp(4.25rem, 25vw, 13.75rem);
+  }
+
+  .lock-timer-display {
+    font-size: clamp(3.75rem, 18vw, 11.25rem);
+  }
+}
+
+@media (max-height: 700px) and (min-width: 1024px) {
+  .timer-stage {
+    padding-block: 2rem;
+  }
+
+  .timer-actions {
+    margin-top: 2rem;
+    gap: 1.25rem;
   }
 }
