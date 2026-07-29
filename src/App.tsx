@@ -41,6 +41,157 @@ import {
 const CHROME_EXTENSION_URL =
   'https://chromewebstore.google.com/detail/ldghdeggjpjicoofpenephbhimggmkld?utm_source=item-share-cb';
 
+type PlaybackControlsProps = {
+  currentSound: Sound | null;
+  volume: number;
+  isMuted: boolean;
+  fadeDuration: number;
+  isFadeActive: boolean;
+  fadeTimeLeft: number;
+  compact?: boolean;
+  onToggleMute: () => void;
+  onVolumeChange: (volume: number) => void;
+  onToggleFade: () => void;
+  onFadeDurationChange: (duration: number) => void;
+};
+
+function PlaybackControls({
+  currentSound,
+  volume,
+  isMuted,
+  fadeDuration,
+  isFadeActive,
+  fadeTimeLeft,
+  compact = false,
+  onToggleMute,
+  onVolumeChange,
+  onToggleFade,
+  onFadeDurationChange,
+}: PlaybackControlsProps) {
+  const fadeProgress = (fadeTimeLeft / Math.max(1, fadeDuration * 60)) * 100;
+
+  if (!currentSound) {
+    return (
+      <div className={cn(
+        "flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03]",
+        compact ? "px-4 py-3 sm:px-5" : "p-4"
+      )}>
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/10 text-white/30">
+            <VolumeX size={16} aria-hidden="true" />
+          </div>
+          <div className="min-w-0">
+            <span className="block font-serif italic text-base text-white/70">Silent session</span>
+            <span className="block truncate text-[9px] uppercase tracking-[0.14em] text-white/25">
+              Choose a sound in Atmosphere
+            </span>
+          </div>
+        </div>
+        <span className="shrink-0 rounded-full border border-white/10 px-3 py-1.5 text-[9px] uppercase tracking-[0.16em] text-white/30">
+          No audio
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn(
+      "rounded-2xl border border-white/10 bg-white/[0.04]",
+      compact ? "p-4 sm:p-5" : "p-5"
+    )}>
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <span className="block text-[9px] uppercase tracking-[0.2em] text-accent">
+            Now playing
+          </span>
+          <span className="mt-1 block truncate font-serif italic text-lg text-white/80">
+            {currentSound?.name ?? 'Silence'}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/10 px-3 py-1.5">
+          <span className={cn(
+            "h-1.5 w-1.5 rounded-full",
+            currentSound && !isMuted && volume > 0 ? "bg-accent animate-pulse" : "bg-white/20"
+          )} />
+          <span className="text-[9px] uppercase tracking-[0.16em] text-white/40">
+            {currentSound && !isMuted && volume > 0 ? 'Playing' : 'Quiet'}
+          </span>
+        </div>
+      </div>
+
+      <div className={cn("grid gap-5", compact ? "sm:grid-cols-2" : "grid-cols-1")}>
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-white/40">Volume</span>
+            <span className="text-[9px] tabular-nums text-white/30">
+              {isMuted ? 'Muted' : `${Math.round(volume * 100)}%`}
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={onToggleMute}
+              aria-label={isMuted ? 'Unmute ambient sound' : 'Mute ambient sound'}
+              className="rounded-full border border-white/10 p-2 text-white/50 transition-colors hover:border-accent/30 hover:text-accent"
+            >
+              {isMuted || volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
+            </button>
+            <input
+              aria-label="Ambient sound volume"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={volume}
+              onChange={(event) => onVolumeChange(parseFloat(event.target.value))}
+              className="h-[2px] flex-1 cursor-pointer appearance-none rounded-lg bg-white/20 accent-accent"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-[9px] uppercase tracking-[0.18em] text-white/40">Fade out</span>
+            <button
+              type="button"
+              onClick={onToggleFade}
+              aria-pressed={isFadeActive}
+              className={cn(
+                "rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-[0.14em] transition-colors",
+                isFadeActive ? "bg-accent text-bg-dark" : "bg-white/10 text-white/40 hover:text-white/70"
+              )}
+            >
+              {isFadeActive ? `${Math.ceil(fadeTimeLeft / 60)}m left` : 'Off'}
+            </button>
+          </div>
+          <div className="flex items-center gap-4">
+            <input
+              aria-label="Fade-out duration"
+              type="range"
+              min="5"
+              max="120"
+              step="5"
+              value={fadeDuration}
+              onChange={(event) => onFadeDurationChange(parseInt(event.target.value))}
+              className="h-[2px] flex-1 cursor-pointer appearance-none rounded-lg bg-white/10 accent-accent"
+            />
+            <span className="w-10 text-right text-[9px] tabular-nums text-white/40">{fadeDuration}m</span>
+          </div>
+          {isFadeActive ? (
+            <div className="mt-3 h-[2px] w-full overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                className="h-full bg-accent"
+                initial={{ width: 0 }}
+                animate={{ width: `${fadeProgress}%` }}
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const CELEBRATION_PARTICLES = Array.from({length: 32}, (_, index) => {
   const angle = (index / 32) * Math.PI * 2;
   const distance = 34 + (index % 6) * 8;
@@ -491,7 +642,18 @@ export default function App() {
     if (!isFadeActive) {
       setFadeTimeLeft(fadeDuration * 60);
     }
-    setIsFadeActive(!isFadeActive);
+    setIsFadeActive((active) => !active);
+  };
+
+  const toggleMute = () => {
+    setIsMuted((muted) => !muted);
+  };
+
+  const updateFadeDuration = (duration: number) => {
+    setFadeDuration(duration);
+    if (isFadeActive) {
+      setFadeTimeLeft(duration * 60);
+    }
   };
 
   const progress = mode === 'up' ? 0 : (timeLeft / Math.max(1, durationSeconds)) * 100;
@@ -659,6 +821,32 @@ export default function App() {
                 Reset
               </button>
             </div>
+
+            <AnimatePresence initial={false}>
+              {isActive ? (
+                <motion.div
+                  key="timer-playback-controls"
+                  initial={{ opacity: 0, y: 12, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  exit={{ opacity: 0, y: 8, height: 0 }}
+                  className="max-w-2xl overflow-hidden"
+                >
+                  <PlaybackControls
+                    compact
+                    currentSound={currentSound}
+                    volume={volume}
+                    isMuted={isMuted}
+                    fadeDuration={fadeDuration}
+                    isFadeActive={isFadeActive}
+                    fadeTimeLeft={fadeTimeLeft}
+                    onToggleMute={toggleMute}
+                    onVolumeChange={setVolume}
+                    onToggleFade={toggleFade}
+                    onFadeDurationChange={updateFadeDuration}
+                  />
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
 
             <div className="max-w-md p-5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
               <div className="flex flex-col gap-1">
@@ -833,80 +1021,22 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="mt-10 pt-10 border-t border-white/5">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-white/40">Fade Out</span>
-                        <span className="text-[9px] text-white/20">Gradually lower volume</span>
-                      </div>
-                      <button 
-                        onClick={toggleFade}
-                        className={cn(
-                          "w-10 h-5 rounded-full relative transition-colors duration-300",
-                          isFadeActive ? "bg-accent" : "bg-white/10"
-                        )}
-                      >
-                        <div className={cn(
-                          "absolute top-1 w-3 h-3 rounded-full transition-all duration-300",
-                          isFadeActive ? "left-6 bg-bg-dark" : "left-1 bg-white/40"
-                        )} />
-                      </button>
-                    </div>
-                    
-                    {isFadeActive && (
-                      <div className="mb-6">
-                        <div className="flex justify-between text-[10px] text-white/40 mb-3">
-                          <span>Fading over {fadeDuration}m</span>
-                          <span>{Math.ceil(fadeTimeLeft / 60)}m left</span>
-                        </div>
-                        <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
-                          <motion.div 
-                            className="h-full bg-accent"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(fadeTimeLeft / (fadeDuration * 60)) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-6">
-                      <input 
-                        type="range" 
-                        min="5" 
-                        max="120" 
-                        step="5" 
-                        value={fadeDuration}
-                        onChange={(e) => {
-                          const val = parseInt(e.target.value);
-                          setFadeDuration(val);
-                          if (isFadeActive) setFadeTimeLeft(val * 60);
-                        }}
-                        className="flex-1 h-[2px] bg-white/10 rounded-lg appearance-none cursor-pointer accent-accent"
-                      />
-                      <span className="text-[10px] text-white/40 w-10 text-right">{fadeDuration}m</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-10 pt-10 border-t border-white/5">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 mb-6 block">Master Volume</span>
-                    <div className="flex items-center gap-6">
-                      <button 
-                        onClick={() => setIsMuted(!isMuted)}
-                        className="text-white/40 hover:text-white transition-colors"
-                      >
-                        {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                      </button>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="1" 
-                        step="0.01" 
-                        value={volume}
-                        onChange={(e) => setVolume(parseFloat(e.target.value))}
-                        className="flex-1 h-[2px] bg-white/20 rounded-lg appearance-none cursor-pointer accent-accent"
+                  {!isActive ? (
+                    <div className="mt-10 border-t border-white/5 pt-10">
+                      <PlaybackControls
+                        currentSound={currentSound}
+                        volume={volume}
+                        isMuted={isMuted}
+                        fadeDuration={fadeDuration}
+                        isFadeActive={isFadeActive}
+                        fadeTimeLeft={fadeTimeLeft}
+                        onToggleMute={toggleMute}
+                        onVolumeChange={setVolume}
+                        onToggleFade={toggleFade}
+                        onFadeDurationChange={updateFadeDuration}
                       />
                     </div>
-                  </div>
+                  ) : null}
                 </motion.div>
               )}
             </AnimatePresence>
